@@ -18,18 +18,20 @@ typedef struct {
 } bst;
 
 sNode* createNode(int x) {
-    sNode* newNode = (sNode*)malloc(sizeof(sNode));
+    sNode *pNode = (sNode*)malloc(sizeof(sNode));
 	
-    newNode->data = x;
-    newNode->pLeft = NULL;
-    newNode->pRight = NULL;
+    pNode->data = x;
+    pNode->pLeft = NULL;
+    pNode->pRight = NULL;
 
-    return newNode;
+    return pNode;
 }
 
 bst* create() {
-	bst* pTree = (bst*)malloc(sizeof(bst));
+	bst *pTree = (bst*)malloc(sizeof(bst));
+
     pTree->pRoot = NULL;
+
     return pTree;
 }
 
@@ -38,7 +40,9 @@ void insert(bst* t, int x) {
         t->pRoot = createNode(x);
         return;
     }
-    sNode* pCurrent = t->pRoot;
+
+    sNode *pCurrent = t->pRoot;
+	
     while (pCurrent != NULL) {
         if (x < pCurrent->data) {
             if (pCurrent->pLeft == NULL) {
@@ -103,21 +107,79 @@ void postorder(sNode *pPointer) {
 }
 
 sNode* maximum(sNode *pPointer) {
-	// Your code here
+	while (pPointer->pRight != NULL) {
+        pPointer = pPointer->pRight;
+    }
+    return pPointer;
 }
 
 sNode* minimum(sNode *pPointer) {
-	// Your code here
+	while (pPointer->pLeft != NULL) {
+        pPointer = pPointer->pLeft;
+    }
+    return pPointer;
 }
 
 sNode* parent(bst *t, int x) {
-	// Your code here
+
+	sNode *pCurrent = t->pRoot;
+	sNode *pParent = NULL;
+
+	while (pCurrent != NULL && pCurrent->data != x) {
+		pParent = pCurrent;
+		if (x < pCurrent->data) {
+			pCurrent = pCurrent->pLeft;
+		} 
+        else {
+			pCurrent = pCurrent->pRight;
+		}
+	}
+
+	if (pCurrent == NULL || pCurrent == t->pRoot) {
+		return NULL;
+	} else {
+		return pParent;
+	}
 }
 
 sNode* successor(bst *t, int x) {
-	// Your code here
+
+	sNode *pCurrent = search(t, x);
+
+	if (pCurrent == NULL) {
+		return NULL;
+	}
+	if (pCurrent->pRight != NULL) {
+		return minimum(pCurrent->pRight);
+	}
+
+	sNode *pSuccessor = parent(t, x);
+
+	while (pSuccessor != NULL && pCurrent == pSuccessor->pRight) {
+		pCurrent = pSuccessor;
+		pSuccessor = parent(t, pSuccessor->data);
+	}
+
+	return pSuccessor;
 }
 
 sNode* predecessor(bst *t, int x) {
-	// Your code here
+
+	sNode *pCurrent = search(t, x);
+
+	if (pCurrent == NULL) {
+		return NULL;
+	}
+	if (pCurrent->pLeft != NULL) {
+		return maximum(pCurrent->pLeft);
+	}
+
+	sNode *pPredecessor = parent(t, x);
+
+	while (pPredecessor != NULL && pCurrent == pPredecessor->pLeft) {
+		pCurrent = pPredecessor;
+		pPredecessor = parent(t, pPredecessor->data);
+	}
+	
+	return pPredecessor;
 }
